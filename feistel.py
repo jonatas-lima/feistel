@@ -1,10 +1,67 @@
 import random
+from keys import KeysGenerator
 
 BLOCK_SIZE = 8
 ITERATIONS = 4
 SEED = '1010101010101010'
 
 random.seed(SEED)
+
+class Feistel:
+    def __init__(self, secret_key: str, iterations: int = ITERATIONS, block_size: int = BLOCK_SIZE) -> None:
+        self.__secret_key = secret_key
+        self.__iterations = iterations
+        self.__block_size = block_size
+
+        kg = KeysGenerator(int(secret_key, base=16))
+        self.__keys = kg.generate_keys()
+
+    def encrypt(self, plain_text: str) -> str:
+        first_half_slice, second_half_slice = self.__half_slices(plain_text)
+        encrypted_text = plain_text
+
+        for i in range(self.__iterations):
+            l0, r0 = encrypted_text[first_half_slice], encrypted_text[second_half_slice]
+            e = self.__f(r0, i)
+            l1, r1 = r0, self.__xor(l0, e)
+            encrypted_text = l1 + r1
+
+        return encrypted_text
+
+    def decrypt(self, encrypted_text: str) -> str:
+        first_half_slice, second_half_slice = self.__half_slices(encrypted_text)
+        plain_text = encrypted_text
+
+        for i in range(self.__iterations):
+            r0, l0 = plain_text[first_half_slice], plain_text[second_half_slice]
+            e = self.__f(l0, i)
+            l1, r1 = l0, self.__xor(r0, e)
+            plain_text = l1 + r1
+
+        return plain_text
+
+    def __whitening(self, text: str, key: str) -> list[int]:
+        result = []
+        key = format(key, "016x")
+
+        for i in range(self.__block_size):
+            j = i * 4
+            text_slice = text[j:j+4]
+            key_slice = key[j:j+4]
+
+            xor_word = int(text_slice, 16) ^ int(key_slice, 16)
+            result.append(xor_word)
+        return result
+
+
+    def __f(self, text: str, round: int) -> str:
+        ...
+
+    def __xor(self, s1: str, s2: str) -> str:
+        ...
+
+    def __half_slices(self, text: str) -> tuple[slice, slice]:
+        return slice(None, len(text) // 2, None), slice(len(text) // 2, None, None)
 
 def decrypt(encrypted_text: str, iterations: int = ITERATIONS) -> str:
     first_half_slice = slice(None, len(encrypted_text) // 2, None)
