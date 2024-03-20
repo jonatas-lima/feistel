@@ -1,9 +1,10 @@
 from socket import AF_INET, SOCK_STREAM, socket
 
-from feistel import feistel
+from feistel import Feistel
 
 
-serverName = '127.0.0.1'
+feistel_client = Feistel(90)
+serverName = "127.0.0.1"
 serverPort = 12000
 clientSocket = socket(AF_INET, SOCK_STREAM)
 
@@ -11,13 +12,14 @@ clientSocket = socket(AF_INET, SOCK_STREAM)
 clientSocket.connect((serverName, serverPort))
 
 # Recebe mensagem do usuario e envia ao servidor
-message = input('Digite uma frase: ')
-secret_message = feistel(message)
+message = input("Digite uma frase: ")
+secret_message = feistel_client.encrypt(message)
 
-clientSocket.send(secret_message.encode('ascii'))
+clientSocket.send(secret_message.encode("ascii"))
 
 # Aguarda mensagem de retorno e a imprime
 modifiedMessage, addr = clientSocket.recvfrom(2048)
-print("Retorno do Servidor:", modifiedMessage.decode())
+decrypted_message = feistel_client.decrypt(modifiedMessage.decode("ascii"))
+print("Retorno do Servidor:", decrypted_message)
 
 clientSocket.close()
