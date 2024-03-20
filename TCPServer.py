@@ -16,11 +16,13 @@ while 1:
     # Cria um socket para tratar a conexao do cliente
     connectionSocket, addr = serverSocket.accept()
     sentence = connectionSocket.recv(1024)
+    print("Recebido encryptado:", sentence)
 
     decrypted_message = feistel_client.decrypt(sentence.decode("ascii"))
+    print("Mensagem desencriptada:", decrypted_message)
 
     capitalizedSentence = decrypted_message.upper()
-    print("recebido", capitalizedSentence)
+    print("Mensagem transformada:", capitalizedSentence)
 
     encrypted_response = feistel_client.encrypt(capitalizedSentence)
 

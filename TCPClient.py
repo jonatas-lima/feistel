@@ -15,11 +15,14 @@ clientSocket.connect((serverName, serverPort))
 message = input("Digite uma frase: ")
 secret_message = feistel_client.encrypt(message)
 
+print("Enviando mensagem encriptada:", secret_message)
 clientSocket.send(secret_message.encode("ascii"))
 
 # Aguarda mensagem de retorno e a imprime
 modifiedMessage, addr = clientSocket.recvfrom(2048)
+print("Mensagem recebida do servidor:", modifiedMessage)
+
 decrypted_message = feistel_client.decrypt(modifiedMessage.decode("ascii"))
-print("Retorno do Servidor:", decrypted_message)
+print("Retorno do Servidor desencriptado:", decrypted_message)
 
 clientSocket.close()
