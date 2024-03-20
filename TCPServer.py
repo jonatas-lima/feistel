@@ -1,7 +1,7 @@
 from socket import socket, AF_INET, SOCK_STREAM
 from feistel import Feistel
 
-feistel_client = Feistel(90)
+feistel_client = Feistel("./secrets/secret_key")
 
 serverPort = 12000
 # Cria o Socket TCP (SOCK_STREAM) para rede IPv4 (AF_INET)

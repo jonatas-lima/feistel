@@ -3,7 +3,7 @@ from socket import AF_INET, SOCK_STREAM, socket
 from feistel import Feistel
 
 
-feistel_client = Feistel(90)
+feistel_client = Feistel("./secrets/secret_key")
 serverName = "127.0.0.1"
 serverPort = 12000
 clientSocket = socket(AF_INET, SOCK_STREAM)

@@ -2,7 +2,7 @@ from feistel import Feistel
 
 
 def test_basic():
-    f = Feistel(100)
+    f = Feistel("./secrets/secret_key")
     plain_text = "opa, david! tudo bem?"
 
     encrypted = f.encrypt(plain_text)

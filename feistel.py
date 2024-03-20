@@ -12,7 +12,7 @@ random.seed(SEED)
 class Feistel:
     def __init__(
         self,
-        secret_key: int,
+        secret_key_path: str,
         iterations: int = ITERATIONS,
         block_size: int = BLOCK_SIZE,
     ) -> None:
@@ -20,7 +20,7 @@ class Feistel:
         self.__block_size = block_size
         self.padding_character = "."
 
-        kg = KeysGenerator(secret_key)
+        kg = KeysGenerator(secret_key_path)
         self.__keys = kg.generate_keys()
 
     def __pad_message_to_8_bytes(self, message: str):
