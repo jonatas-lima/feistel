@@ -1,4 +1,5 @@
 import random
+import binascii
 from keys import KeysGenerator
 
 BLOCK_SIZE = 8
@@ -22,8 +23,13 @@ class Feistel:
         self.__keys = kg.generate_keys()
 
     def encrypt(self, plain_text: str) -> str:
-        first_half_slice, second_half_slice = self.__half_slices(plain_text)
-        left, right = plain_text[first_half_slice], plain_text[second_half_slice]
+        hex_plain_text = binascii.hexlify(plain_text.encode("ascii")).decode("ascii")
+
+        first_half_slice, second_half_slice = self.__half_slices(hex_plain_text)
+        left, right = (
+            hex_plain_text[first_half_slice],
+            hex_plain_text[second_half_slice],
+        )
         encrypted_text = plain_text
 
         for i in range(self.__iterations):
@@ -45,7 +51,8 @@ class Feistel:
             left = self.__xor(right, self.__f(left, i))
             right = l_prev
 
-        return left + right
+        concatenated = left + right
+        return binascii.unhexlify(concatenated).decode("ascii")
 
     def __f(self, text: str, round: int) -> str:
         key = self.__keys[round]
