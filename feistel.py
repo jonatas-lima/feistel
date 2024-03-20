@@ -1,12 +1,7 @@
-import random
-import binascii
 from keys import KeysGenerator
 
 BLOCK_SIZE = 8
 ITERATIONS = 4
-SEED = "1010101010101010"
-
-random.seed(SEED)
 
 
 class Feistel:
