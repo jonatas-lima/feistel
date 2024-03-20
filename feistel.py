@@ -18,19 +18,25 @@ class Feistel:
     ) -> None:
         self.__iterations = iterations
         self.__block_size = block_size
+        self.padding_character = "."
 
         kg = KeysGenerator(secret_key)
         self.__keys = kg.generate_keys()
 
-    def encrypt(self, plain_text: str) -> str:
-        hex_plain_text = binascii.hexlify(plain_text.encode("ascii")).decode("ascii")
+    def __pad_message_to_8_bytes(self, message: str):
+        return message + self.padding_character * (8 - len(message) % 8)
 
-        first_half_slice, second_half_slice = self.__half_slices(hex_plain_text)
+    def __unpad_message(self, message: str):
+        return message.rstrip(self.padding_character)
+
+    def encrypt(self, plain_text: str) -> str:
+        padded_message = self.__pad_message_to_8_bytes(plain_text)
+
+        first_half_slice, second_half_slice = self.__half_slices(padded_message)
         left, right = (
-            hex_plain_text[first_half_slice],
-            hex_plain_text[second_half_slice],
+            padded_message[first_half_slice],
+            padded_message[second_half_slice],
         )
-        encrypted_text = plain_text
 
         for i in range(self.__iterations):
             r_prev = right
@@ -52,7 +58,8 @@ class Feistel:
             right = l_prev
 
         concatenated = left + right
-        return binascii.unhexlify(concatenated).decode("ascii")
+
+        return self.__unpad_message(concatenated)
 
     def __f(self, text: str, round: int) -> str:
         key = self.__keys[round]
