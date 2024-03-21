@@ -34,6 +34,12 @@ Para mandar uma mensagem:
 make send message='minha mensagem'
 ```
 
+Para mandar um arquivo de texto:
+
+```sh
+make send-file file=./caminho/do/meu/arquivo
+```
+
 ### Testes
 
 Para rodar os testes no arquivo `tests.py`:

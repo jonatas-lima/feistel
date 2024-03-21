@@ -9,3 +9,6 @@ kill:
 
 send:
 	python3 TCPClient.py $(message)
+
+send-file:
+	python3 TCPClient.py < $(file)
