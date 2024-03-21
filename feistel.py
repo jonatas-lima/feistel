@@ -13,16 +13,16 @@ class Feistel:
     ) -> None:
         self.__iterations = iterations
         self.__block_size = block_size
-        self.padding_character = "."
+        self.__padding_character = "#"
 
         kg = KeysGenerator(secret_key_path)
-        self.__keys = kg.generate_keys()
+        self.__keys = kg.generate_keys(quantity=iterations)
 
     def __pad_message_to_8_bytes(self, message: str):
-        return message + self.padding_character * (8 - len(message) % 8)
+        return message + self.__padding_character * (8 - len(message) % 8)
 
     def __unpad_message(self, message: str):
-        return message.rstrip(self.padding_character)
+        return message.rstrip(self.__padding_character)
 
     def encrypt(self, plain_text: str) -> str:
         padded_message = self.__pad_message_to_8_bytes(plain_text)
@@ -34,9 +34,9 @@ class Feistel:
         )
 
         for i in range(self.__iterations):
-            r_prev = right
+            right_prev = right
             right = self.__xor(left, self.__f(right, i))
-            left = r_prev
+            left = right_prev
 
         return left + right
 
@@ -48,9 +48,9 @@ class Feistel:
         )
 
         for i in range(self.__iterations - 1, -1, -1):
-            l_prev = left
+            left_prev = left
             left = self.__xor(right, self.__f(left, i))
-            right = l_prev
+            right = left_prev
 
         concatenated = left + right
 
