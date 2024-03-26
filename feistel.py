@@ -19,7 +19,7 @@ class Feistel:
         self.__keys = kg.generate_keys(quantity=iterations)
 
     def __pad_message_to_8_bytes(self, message: str):
-        return message + self.__padding_character * (8 - len(message) % 8)
+        return message + self.__padding_character * (self.__block_size - len(message) % self.__block_size)
 
     def __unpad_message(self, message: str):
         return message.rstrip(self.__padding_character)
@@ -78,13 +78,13 @@ class Feistel:
         return chr((ord(char) + 13 + key) % 26)
 
     def __xor(self, s1: str, s2: str) -> str:
-        bin_s1 = "".join(format(ord(i), "08b") for i in s1)
-        bin_s2 = "".join(format(ord(i), "08b") for i in s2)
+        bin_s1 = "".join(format(ord(i), f"0{self.__block_size}b") for i in s1)
+        bin_s2 = "".join(format(ord(i), f"0{self.__block_size}b") for i in s2)
 
         # Perform XOR and convert result back to string
         xor_result = "".join(
-            chr(int(bin_s1[i : i + 8], 2) ^ int(bin_s2[i : i + 8], 2))
-            for i in range(0, len(bin_s1), 8)
+            chr(int(bin_s1[i : i + self.__block_size], 2) ^ int(bin_s2[i : i + self.__block_size], 2))
+            for i in range(0, len(bin_s1), self.__block_size)
         )
 
         return xor_result
